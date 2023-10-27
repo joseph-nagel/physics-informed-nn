@@ -15,7 +15,7 @@ class PINN(nn.Module):
     -------
     A PINN module for the simple 1D heat transfer problem is implemented.
     It contains a feedforward NN that predicts the temperature
-    as a function of both a time and a spatial coordinate.
+    as a function of both time and a spatial coordinate.
     Moreover, it allows for computing the regression and physics loss.
     The former loss penalizes predictions that deviate from actual data,
     while the latter measures violations of the physical constraints.
