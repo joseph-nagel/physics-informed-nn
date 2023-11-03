@@ -40,7 +40,7 @@ def make_fc_model(num_inputs,
     ----------
     num_inputs : int
         Number of inputs.
-    num_output : int
+    num_outputs : int
         Number of outputs.
     num_hidden : int or list thereof
         Number of hidden neurons.

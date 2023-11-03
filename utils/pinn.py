@@ -1,5 +1,7 @@
 '''Physics-informed NN.'''
 
+import math
+
 import torch
 import torch.nn as nn
 
@@ -24,7 +26,7 @@ class PINN(nn.Module):
     ----------
     num_inputs : int
         Number of inputs.
-    num_output : int
+    num_outputs : int
         Number of outputs.
     num_hidden : int or list thereof
         Number of hidden neurons.
@@ -105,17 +107,41 @@ class PINN(nn.Module):
         u = self.model(tx)
         return u
 
-    def sample_collocation(self,
-                           num_pde,
-                           num_bc,
-                           num_ic):
-        '''Sample collocation points uniformly.'''
+    def make_collocation(self,
+                         num_pde,
+                         num_bc,
+                         num_ic,
+                         random=True):
+        '''Create collocation points.'''
 
-        # randomly sample points
-        pde_t = torch.rand(num_pde, 1) * self.setup.maxtime
-        pde_x = torch.rand(num_pde, 1) * self.setup.length
-        bc_t = torch.rand(num_bc, 1) * self.setup.maxtime
-        ic_x = torch.rand(num_ic, 1) * self.setup.length
+        # sample points uniformly
+        if random:
+            pde_t = torch.rand(num_pde) * self.setup.maxtime
+            pde_x = torch.rand(num_pde) * self.setup.length
+            bc_t = torch.rand(num_bc) * self.setup.maxtime
+            ic_x = torch.rand(num_ic) * self.setup.length
+
+        # create regular grid
+        else:
+            # TODO: allow for variable-specific grid spacings
+            num_pde_tx = math.floor(math.sqrt(num_pde))
+
+            pde_t_values = torch.linspace(0, self.setup.maxtime, num_pde_tx)
+            pde_x_values = torch.linspace(0, self.setup.length, num_pde_tx)
+
+            pde_tx_grid = torch.cartesian_prod(pde_t_values, pde_x_values)
+
+            pde_t = pde_tx_grid[:,0]
+            pde_x = pde_tx_grid[:,1]
+
+            bc_t = torch.linspace(0, self.setup.maxtime, num_bc)
+            ic_x = torch.linspace(0, self.setup.length, num_ic)
+
+        # reshape tensors
+        pde_t = ensure_2d(pde_t)
+        pde_x = ensure_2d(pde_x)
+        bc_t = ensure_2d(bc_t)
+        ic_x = ensure_2d(ic_x)
 
         # create output dict
         out_dict = {
@@ -151,8 +177,10 @@ class PINN(nn.Module):
         # disable grad
         require_grad(t, x, requires_grad=False)
 
-        # compute loss
+        # compute residual
         residual = u_t - self.setup.alpha * u_xx
+
+        # compute loss
         loss = self.criterion(residual, torch.zeros_like(residual))
 
         return loss
@@ -205,10 +233,12 @@ class PINN(nn.Module):
         if ic_x is None:
             ic_x = pde_x
 
+        # compute loss terms
         pde_loss = self.pde_loss(pde_t, pde_x)
         bc_loss = self.bc_loss(bc_t)
         ic_loss = self.ic_loss(ic_x)
 
+        # compute total loss
         loss = self.pde_weight * pde_loss \
              + self.bc_weight * bc_loss \
              + self.ic_weight * ic_loss

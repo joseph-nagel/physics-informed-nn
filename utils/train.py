@@ -30,6 +30,7 @@ def test_pinn(pinn, colloc_dict):
     return loss
 
 
+# TODO: enable mini-batching
 def train_pinn(pinn,
                optimizer,
                num_epochs,
@@ -43,7 +44,7 @@ def train_pinn(pinn,
     -------
     A CPU-based non-batched training scheme for PINNs is provided.
     The physics loss is minimized for a given set of collocation points.
-    It is assumed that no observational data is available,
+    It is assumed that no real observational data is available,
     such that the regression loss can be omitted.
 
     Parameters
