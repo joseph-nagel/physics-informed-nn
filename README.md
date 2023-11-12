@@ -1,6 +1,6 @@
 # Physics-informed neural nets
 
-![The exact solution of a 1D heat conduction problem](figs/solution.svg)
+![The exact solution of a 1D heat conduction problem](assets/solution.svg)
 
 The goal of this project is to provide an introduction to physics-informed neural networks (PINNs).
 For phenomena that can be mathematically described by certain differential equations,
