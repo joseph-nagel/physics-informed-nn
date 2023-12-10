@@ -44,7 +44,7 @@ class HeatConduction1D(nn.Module):
         alpha = abs(alpha)
         length = abs(length)
         maxtime = abs(maxtime)
-        n = int(abs(n))
+        n = abs(int(n))
 
         self.register_buffer('alpha', torch.as_tensor(alpha))
         self.register_buffer('length', torch.as_tensor(length))
