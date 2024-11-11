@@ -2,8 +2,12 @@
 
 from warnings import warn
 
+import torch
 
-def test_pinn(pinn, colloc_dict):
+from .pinn import PINN
+
+
+def test_pinn(pinn: PINN, colloc_dict: dict[str, torch.Tensor]) -> float:
     '''
     Test PINN physics loss.
 
@@ -25,18 +29,19 @@ def test_pinn(pinn, colloc_dict):
     pinn.eval()
 
     loss = pinn.physics_loss(**colloc_dict)
-    loss = loss.detach().item()
 
-    return loss
+    return loss.detach().item()
 
 
 # TODO: enable mini-batching
-def train_pinn(pinn,
-               optimizer,
-               num_epochs,
-               train_colloc,
-               val_colloc=None,
-               print_every=1):
+def train_pinn(
+    pinn: PINN,
+    optimizer: torch.optim.Optimizer,
+    num_epochs: int,
+    train_colloc: dict[str, torch.Tensor],
+    val_colloc: dict[str, torch.Tensor] | None = None,
+    print_every: int = 1
+) -> dict[str, list[float]]:
     '''
     Train PINN by minimizing the physics loss.
 
@@ -51,11 +56,13 @@ def train_pinn(pinn,
     ----------
     pinn : PINN module
         PINN model with a physics loss method.
+    optimizer : PyTorch optimizer
+        Optimization algorithm.
     num_epochs : int
         Number of training epochs.
     train_colloc : dict
         Dict of collocation points for training.
-    val_colloc : dict
+    val_colloc : dict or None
         Dict of collocation points for validation.
     print_every : int
         Determines when losses are printed.
@@ -88,6 +95,7 @@ def train_pinn(pinn,
 
     # loop over training epochs
     for epoch_idx in range(num_epochs):
+
         pinn.train()
 
         loss = pinn.physics_loss(**train_colloc)

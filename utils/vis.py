@@ -4,10 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def make_colors(num_colors,
-                qual_cm=plt.cm.Dark2,
-                seq_cm=plt.cm.viridis,
-                ensure_seq=False):
+def make_colors(
+    num_colors,
+    qual_cm=plt.cm.Dark2,
+    seq_cm=plt.cm.viridis,
+    ensure_seq=False
+):
     '''
     Create different colors.
 

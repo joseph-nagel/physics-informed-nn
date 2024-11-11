@@ -1,5 +1,8 @@
 '''Model components.'''
 
+from typing import Any
+from collections.abc import Sequence
+
 import torch.nn as nn
 
 
@@ -16,23 +19,25 @@ ACTIVATIONS = {
 }
 
 
-def make_activation(mode, **kwargs):
+def make_activation(mode: str | None, **kwargs: Any) -> nn.Module:
     ''''Create activation function.'''
 
     if mode is None:
-        activ = nn.Identity(**kwargs)
+        activ = nn.Identity()
     elif isinstance(mode, str):
         activ = ACTIVATIONS[mode](**kwargs)
     else:
-        raise TypeError('Unknown activation type: {}'.format(type(mode)))
+        raise TypeError(f'Unknown activation type: {type(mode)}')
 
     return activ
 
 
-def make_fc_model(num_inputs,
-                  num_outputs,
-                  num_hidden=None,
-                  activation='tanh'):
+def make_fc_model(
+    num_inputs: int,
+    num_outputs: int,
+    num_hidden: int | Sequence[int] | None = None,
+    activation: str | None = 'tanh'
+) -> nn.Sequential:
     '''
     Create FC model.
 
@@ -42,9 +47,9 @@ def make_fc_model(num_inputs,
         Number of inputs.
     num_outputs : int
         Number of outputs.
-    num_hidden : int or list thereof
+    num_hidden : int, list of ints or None
         Number of hidden neurons.
-    activation : str
+    activation : str or None
         Activation function type.
 
     '''
@@ -53,14 +58,14 @@ def make_fc_model(num_inputs,
         num_hidden = []
     elif isinstance(num_hidden, int):
         num_hidden = [num_hidden]
-    elif not isinstance(num_hidden, list):
-        raise TypeError('Unknown hidden num. type: {}'.format(type(num_hidden)))
+    elif not isinstance(num_hidden, Sequence):
+        raise TypeError(f'Unknown hidden num. type: {type(num_hidden)}')
 
     # collect feature numbers
-    num_features = [num_inputs] + num_hidden + [num_outputs]
+    num_features = [num_inputs] + list(num_hidden) + [num_outputs]
 
     # assemble model layers
-    layer_list = []
+    layer_list = [] # type: list[nn.Module]
 
     for idx, (f1, f2) in enumerate(zip(num_features[:-1], num_features[1:])):
 

@@ -1,5 +1,6 @@
 '''Physics-informed NN.'''
 
+from collections.abc import Sequence
 import math
 
 import torch
@@ -28,9 +29,9 @@ class PINN(nn.Module):
         Number of inputs.
     num_outputs : int
         Number of outputs.
-    num_hidden : int or list thereof
+    num_hidden : int, list of ints or None
         Number of hidden neurons.
-    activation : str
+    activation : str or None
         Activation function type.
     pde_weight : float
         PDE loss weight.
@@ -51,19 +52,21 @@ class PINN(nn.Module):
 
     '''
 
-    def __init__(self,
-                 num_inputs,
-                 num_outputs,
-                 num_hidden=None,
-                 activation='tanh',
-                 pde_weight=1.0,
-                 bc_weight=1.0,
-                 ic_weight=1.0,
-                 reduction='mean',
-                 alpha=1.0,
-                 length=1.0,
-                 maxtime=1.0,
-                 n=1):
+    def __init__(
+        self,
+        num_inputs: int,
+        num_outputs: int,
+        num_hidden: int | Sequence[int] | None = None,
+        activation: str | None = 'tanh',
+        pde_weight: float = 1.0,
+        bc_weight: float = 1.0,
+        ic_weight: float = 1.0,
+        reduction: str = 'mean',
+        alpha: float = 1.0,
+        length: float = 1.0,
+        maxtime: float = 1.0,
+        n: int = 1
+    ) -> None:
 
         super().__init__()
 
@@ -95,8 +98,9 @@ class PINN(nn.Module):
         # initialize criterion
         self.criterion = nn.MSELoss(reduction=reduction)
 
-    def forward(self, t, x):
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         '''Predict PDE solution.'''
+
         t = torch.as_tensor(t)
         x = torch.as_tensor(x)
 
@@ -105,13 +109,16 @@ class PINN(nn.Module):
 
         tx = torch.cat((t, x), dim=1)
         u = self.model(tx)
+
         return u
 
-    def make_collocation(self,
-                         num_pde,
-                         num_bc,
-                         num_ic,
-                         random=True):
+    def make_collocation(
+        self,
+        num_pde: int,
+        num_bc: int,
+        num_ic: int,
+        random: bool = True
+    ) -> dict[str, torch.Tensor]:
         '''Create collocation points.'''
 
         # sample points uniformly
@@ -153,13 +160,20 @@ class PINN(nn.Module):
 
         return out_dict
 
-    def data_loss(self, t, x, y):
+    def data_loss(
+        self,
+        t: torch.Tensor,
+        x: torch.Tensor,
+        y: torch.Tensor
+    ) -> torch.Tensor:
         '''Compute standard regression loss.'''
+
         u = self(t, x) # predict solution
         loss = self.criterion(u, y) # compute loss
+
         return loss
 
-    def pde_loss(self, t, x):
+    def pde_loss(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         '''Compute PDE-based loss.'''
 
         # enable grad
@@ -185,7 +199,7 @@ class PINN(nn.Module):
 
         return loss
 
-    def bc_loss(self, t):
+    def bc_loss(self, t: torch.Tensor) -> torch.Tensor:
         '''Compute boundary condition loss.'''
 
         # predict solution at left/right boundary
@@ -206,7 +220,7 @@ class PINN(nn.Module):
 
         return loss
 
-    def ic_loss(self, x):
+    def ic_loss(self, x: torch.Tensor) -> torch.Tensor:
         '''Compute initial condition loss.'''
 
         # predict solution at initial time
@@ -220,11 +234,13 @@ class PINN(nn.Module):
 
         return loss
 
-    def physics_loss(self,
-                     pde_t,
-                     pde_x,
-                     bc_t=None,
-                     ic_x=None):
+    def physics_loss(
+        self,
+        pde_t: torch.Tensor,
+        pde_x: torch.Tensor,
+        bc_t: torch.Tensor | None = None,
+        ic_x: torch.Tensor | None = None
+    ) -> torch.Tensor:
         '''Compute total physics loss.'''
 
         if bc_t is None:
@@ -246,8 +262,9 @@ class PINN(nn.Module):
         return loss
 
 
-def ensure_2d(x):
+def ensure_2d(x: torch.Tensor) -> torch.Tensor:
     '''Ensure an appropriate tensor shape.'''
+
     if x.ndim <= 1:
         x = x.view(-1, 1)
 
@@ -257,14 +274,16 @@ def ensure_2d(x):
         raise ValueError('Two or less tensor dimensions expected')
 
 
-def require_grad(*tensors, requires_grad=True):
+def require_grad(*tensors: torch.Tensor, requires_grad: bool = True) -> None:
     '''Enable/disable gradient.'''
+
     for x in tensors:
         x.requires_grad = requires_grad
 
 
-def compute_grad(outputs, inputs):
+def compute_grad(outputs: torch.Tensor, inputs: torch.Tensor) -> torch.Tensor:
     '''Compute gradients.'''
+
     gradients = torch.autograd.grad(
         outputs=outputs.sum(),
         inputs=inputs,
@@ -275,5 +294,5 @@ def compute_grad(outputs, inputs):
     if len(gradients) == 1:
         return gradients[0]
     else:
-        raise RuntimeError('Unexpected gradient tuple length encountered: {}'.format(len(gradients)))
+        raise RuntimeError(f'Unexpected gradient tuple length encountered: {len(gradients)}')
 

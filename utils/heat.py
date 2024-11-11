@@ -33,11 +33,13 @@ class HeatConduction1D(nn.Module):
 
     '''
 
-    def __init__(self,
-                 alpha=1.0,
-                 length=1.0,
-                 maxtime=1.0,
-                 n=1):
+    def __init__(
+        self,
+        alpha: float = 1.0,
+        length: float = 1.0,
+        maxtime: float = 1.0,
+        n: int = 1
+    ) -> None:
 
         super().__init__()
 
@@ -52,19 +54,19 @@ class HeatConduction1D(nn.Module):
         self.register_buffer('n', torch.as_tensor(n))
 
     @property
-    def sqrt_lambda(self):
+    def sqrt_lambda(self) -> torch.Tensor:
         return self.n * torch.pi / self.length
 
     @staticmethod
-    def boundary_condition(t):
+    def boundary_condition(t: torch.Tensor) -> torch.Tensor:
         '''Return zeros as boundary condition.'''
         return torch.zeros_like(t)
 
-    def initial_condition(self, x):
+    def initial_condition(self, x: torch.Tensor) -> torch.Tensor:
         '''Evaluate the initial condition.'''
         return torch.sin(self.sqrt_lambda * x)
 
-    def exact_solution(self, t, x):
+    def exact_solution(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         '''Compute the exact solution.'''
         sqrt_lambda = self.sqrt_lambda
 
@@ -74,6 +76,6 @@ class HeatConduction1D(nn.Module):
         u = space_part * time_part
         return u
 
-    def forward(self, t, x):
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         return self.exact_solution(t=t, x=x)
 
