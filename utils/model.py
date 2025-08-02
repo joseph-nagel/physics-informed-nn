@@ -65,7 +65,7 @@ def make_fc_model(
     num_features = [num_inputs] + list(num_hidden) + [num_outputs]
 
     # assemble model layers
-    layer_list = [] # type: list[nn.Module]
+    layer_list = []  # type: list[nn.Module]
 
     for idx, (f1, f2) in enumerate(zip(num_features[:-1], num_features[1:])):
 
