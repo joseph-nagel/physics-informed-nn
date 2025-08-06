@@ -1,5 +1,5 @@
 '''
-Some utilities.
+PINN utilities.
 
 Modules
 -------
