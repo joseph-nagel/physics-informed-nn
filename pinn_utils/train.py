@@ -126,4 +126,3 @@ def train_pinn(
     }
 
     return history
-

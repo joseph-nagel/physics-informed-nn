@@ -20,4 +20,3 @@ from .pinn import PINN
 from .train import test_pinn, train_pinn
 
 from .vis import make_colors
-

@@ -84,4 +84,3 @@ def make_fc_model(
     model = nn.Sequential(*layer_list)
 
     return model
-

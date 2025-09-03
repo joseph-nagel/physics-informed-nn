@@ -38,4 +38,3 @@ def make_colors(
         colors = seq_cm(np.linspace(0, 1, num_colors))
 
     return colors
-

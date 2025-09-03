@@ -15,6 +15,4 @@ Everything here is work in progress at this point.
 ## Notebooks
 
 - [Introduction](notebooks/intro.ipynb)
-
 - [Heat equation example](notebooks/heat_equation_1d.ipynb)
-

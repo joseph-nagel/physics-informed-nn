@@ -78,4 +78,3 @@ class HeatConduction1D(nn.Module):
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         return self.exact_solution(t=t, x=x)
-

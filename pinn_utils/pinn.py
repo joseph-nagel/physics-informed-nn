@@ -295,4 +295,3 @@ def compute_grad(outputs: torch.Tensor, inputs: torch.Tensor) -> torch.Tensor:
         return gradients[0]
     else:
         raise RuntimeError(f'Unexpected gradient tuple length encountered: {len(gradients)}')
-
