@@ -27,9 +27,7 @@ def test_pinn(pinn: PINN, colloc_dict: dict[str, torch.Tensor]) -> float:
     '''
 
     pinn.eval()
-
     loss = pinn.physics_loss(**colloc_dict)
-
     return loss.detach().item()
 
 

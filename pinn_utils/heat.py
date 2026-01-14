@@ -39,8 +39,7 @@ class HeatConduction1D(nn.Module):
         length: float = 1.0,
         maxtime: float = 1.0,
         n: int = 1
-    ) -> None:
-
+    ):
         super().__init__()
 
         alpha = abs(alpha)

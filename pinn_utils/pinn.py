@@ -66,8 +66,7 @@ class PINN(nn.Module):
         length: float = 1.0,
         maxtime: float = 1.0,
         n: int = 1
-    ) -> None:
-
+    ):
         super().__init__()
 
         # set up problem
@@ -100,7 +99,6 @@ class PINN(nn.Module):
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         '''Predict PDE solution.'''
-
         t = torch.as_tensor(t)
         x = torch.as_tensor(x)
 
@@ -167,10 +165,8 @@ class PINN(nn.Module):
         y: torch.Tensor
     ) -> torch.Tensor:
         '''Compute standard regression loss.'''
-
         u = self(t, x) # predict solution
         loss = self.criterion(u, y) # compute loss
-
         return loss
 
     def pde_loss(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
@@ -242,7 +238,6 @@ class PINN(nn.Module):
         ic_x: torch.Tensor | None = None
     ) -> torch.Tensor:
         '''Compute total physics loss.'''
-
         if bc_t is None:
             bc_t = pde_t
 
@@ -264,7 +259,6 @@ class PINN(nn.Module):
 
 def ensure_2d(x: torch.Tensor) -> torch.Tensor:
     '''Ensure an appropriate tensor shape.'''
-
     if x.ndim <= 1:
         x = x.view(-1, 1)
 
@@ -276,7 +270,6 @@ def ensure_2d(x: torch.Tensor) -> torch.Tensor:
 
 def require_grad(*tensors: torch.Tensor, requires_grad: bool = True) -> None:
     '''Enable/disable gradient.'''
-
     for x in tensors:
         x.requires_grad = requires_grad
 
