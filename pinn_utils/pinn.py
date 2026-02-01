@@ -165,8 +165,8 @@ class PINN(nn.Module):
         y: torch.Tensor
     ) -> torch.Tensor:
         '''Compute standard regression loss.'''
-        u = self(t, x) # predict solution
-        loss = self.criterion(u, y) # compute loss
+        u = self(t, x)  # predict solution
+        loss = self.criterion(u, y)  # compute loss
         return loss
 
     def pde_loss(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:

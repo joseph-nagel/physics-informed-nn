@@ -21,14 +21,12 @@ ACTIVATIONS = {
 
 def make_activation(mode: str | None, **kwargs: Any) -> nn.Module:
     ''''Create activation function.'''
-
     if mode is None:
         activ = nn.Identity()
     elif isinstance(mode, str):
         activ = ACTIVATIONS[mode](**kwargs)
     else:
         raise TypeError(f'Unknown activation type: {type(mode)}')
-
     return activ
 
 

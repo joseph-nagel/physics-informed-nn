@@ -93,7 +93,6 @@ def train_pinn(
 
     # loop over training epochs
     for epoch_idx in range(num_epochs):
-
         pinn.train()
 
         loss = pinn.physics_loss(**train_colloc)
