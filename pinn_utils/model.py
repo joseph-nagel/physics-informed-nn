@@ -20,7 +20,7 @@ ACTIVATIONS = {
 
 
 def make_activation(mode: str | None, **kwargs: Any) -> nn.Module:
-    ''''Create activation function.'''
+    '''Create activation function.'''
     if mode is None:
         activ = nn.Identity()
     elif isinstance(mode, str):
